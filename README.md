@@ -1,4 +1,5 @@
-# Image Server, an Open Source Project for the NASA/JPL LiveView (Open Source Edition)
+# Image Server
+### An Open Source Project for the NASA/JPL LiveView (Open Source Edition)
 <!-- <img src="images/icon.png" alt="LiveView-icon" width="256"/> -->
 
 This repository contains the image server for the re-designed, open source release of LiveView, an imaging spectrometer data visualization program. This repository is meant as an optional component to the Open Source LiveView version, enabling the use of data streaming from network connected sources. By using the "Remote Camera" option during LiveView startup, it is possible to connect to a server at a desired IP and stream image data from a server running at that address. 
