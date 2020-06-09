@@ -3,7 +3,7 @@
 Connection::Connection(QObject *parent) :
     QObject(parent)
 {
-    QThreadPool::globalInstance()->setMaxThreadCount(15);
+    QThreadPool::globalInstance()->setMaxThreadCount(3);
 }
 
 void Connection::SetSocket(int Descriptor)
@@ -11,9 +11,9 @@ void Connection::SetSocket(int Descriptor)
     handshake = false; // Say that we haven't send the handshake data over yet
     socket = new QTcpSocket(this); // Create the socket value
 
-    connect(socket,SIGNAL(connected()),this,SLOT(connected()));
-    connect(socket,SIGNAL(disconnected()),this,SLOT(disconnected()));
-    connect(socket,SIGNAL(readyRead()),this,SLOT(readyRead()));
+    connect(socket, &QTcpSocket::connected, this, &Connection::connected);
+    connect(socket, &QTcpSocket::disconnected, this, &Connection::disconnected);
+    connect(socket, &QTcpSocket::readyRead, this, &Connection::readyRead);
 
     socket->setSocketDescriptor(Descriptor);
 
@@ -35,8 +35,16 @@ void Connection::readyRead()
     qDebug() << socket->readAll();
 
     if(!handshake) { // Handshake hasn't been initiated yet
-        const char *sizes = "100, 200";
-        if(!socket->write(sizes)) {
+        // Create the handshake object
+        QJsonObject handshakeObj;
+        QJsonDocument handshakeDoc;
+        const int height = 480;
+        const int width = 640;
+        handshakeObj["height"] = height;
+        handshakeObj["width"] = width;
+        handshakeObj["requestType"] = "Handshake";
+        handshakeDoc.setObject(handshakeObj);
+        if(!socket->write(qCompress(handshakeDoc.toJson()))) {
             // Terminate the connection
             qDebug() << "Could not complete handshake. Terminating...";
         } else {
@@ -45,9 +53,10 @@ void Connection::readyRead()
         }
     } else {
         // Create task for getting data
+        // Since we are doing this unqueued, we can assume that this means the user wants data
         Task *task = new Task();
         task->setAutoDelete(true);
-        connect(task, SIGNAL(Result(int)), SLOT(TaskResult(int)), Qt::QueuedConnection);
+        connect(task, &Task::Result, this, &Connection::TaskResult, Qt::QueuedConnection);
         QThreadPool::globalInstance()->start(task);
     }
 }

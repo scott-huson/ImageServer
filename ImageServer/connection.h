@@ -5,6 +5,8 @@
 #include <QTcpSocket>
 #include <QDebug>
 #include <QThreadPool>
+#include <QJsonObject>
+#include <QJsonDocument>
 #include "task.h"
 
 class Connection : public QObject
