@@ -7,7 +7,7 @@ Server::Server(QObject *parent): QTcpServer(parent)
 
 void Server::StartServer()
 {
-    const int port = 43565;
+    const int port = 1337;
     if(listen(QHostAddress::Any, port)) {
         qDebug() << "Started image server on port " << port;
     } else {
