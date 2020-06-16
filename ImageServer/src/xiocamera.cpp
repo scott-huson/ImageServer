@@ -217,3 +217,8 @@ uint16_t* XIOCamera::getFrame()
         return dummy.data();
     }
 }
+
+size_t XIOCamera::getFrameSize()
+{
+    return framesize;
+}

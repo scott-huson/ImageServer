@@ -33,6 +33,7 @@ SOURCES += \
         server.cpp \
         task.cpp \
         xiocamera.cpp \
+        osutils.cpp \
 
 
 
@@ -43,6 +44,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     connection.h \
+    include/image_type.h \
     server.h \
     task.h \
     cameramodel.h \

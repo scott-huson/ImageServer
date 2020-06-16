@@ -1,9 +1,10 @@
 #include "connection.h"
 
-Connection::Connection(QObject *parent) :
+Connection::Connection(QObject *parent, CameraModel *ReadingCamera) :
     QObject(parent)
 {
     QThreadPool::globalInstance()->setMaxThreadCount(3);
+    Camera = ReadingCamera;
 }
 
 void Connection::SetSocket(int Descriptor)
@@ -32,7 +33,7 @@ void Connection::disconnected()
 
 void Connection::readyRead()
 {
-    qDebug() << socket->readAll();
+    qDebug() << "1. Received Request: " << socket->readAll(); // Print out whatever we received from the socket
 
     if(!handshake) { // Handshake hasn't been initiated yet
         // Create the handshake object
@@ -50,24 +51,31 @@ void Connection::readyRead()
         } else {
             // In this case that the socket writes sucessfully, all we need to do is wait for the next write to confirm that the handshake has started
             handshake = true;
+            qDebug() << "---";
         }
     } else {
+        qDebug() << "2. Getting frame " << socket->state();
         // Create task for getting data
         // Since we are doing this unqueued, we can assume that this means the user wants data
-        Task *task = new Task();
+        Task *task = new Task(Camera);
         task->setAutoDelete(true);
         connect(task, &Task::Result, this, &Connection::TaskResult, Qt::QueuedConnection);
         QThreadPool::globalInstance()->start(task);
     }
 }
 
-void Connection::TaskResult(int Number)
+void Connection::TaskResult(uint16_t *data)
 {
-    //right here
+    size_t dataSize = Camera->getFrameSize();
+    qDebug() << "3. Got frame. Size: " << dataSize << "bytes";
 
-    QByteArray Buffer;
-    Buffer.append("\r\nTask Result = ");
-    Buffer.append(QString::number(Number));
-
-    socket->write(Buffer);
+    char copy_data[dataSize];
+    memcpy(copy_data, data, dataSize); // Should theoretically be optimized out?
+    QByteArray Buffer = QByteArray::fromRawData(copy_data, dataSize);
+    qDebug() << "4. Processed data. Waiting to write..." << socket->state();
+    socket->waitForConnected();
+    const int written = socket->write(Buffer);
+    socket->waitForBytesWritten();
+    qDebug() << "5. Wrote data back to client" << written << "bytes.";
+    qDebug() << "---";
 }

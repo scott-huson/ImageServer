@@ -17,6 +17,9 @@
 
 #include "alphanum.hpp"
 
+#include <dirent.h>
+#include <sys/stat.h>
+
 #include "osutils.h"
 #include "cameramodel.h"
 #include "constants.h"
@@ -40,6 +43,8 @@ public:
     virtual void setDir(const char *dirname);
 
     virtual uint16_t* getFrame();
+
+    size_t getFrameSize();
 
 private:
     std::string getFname();

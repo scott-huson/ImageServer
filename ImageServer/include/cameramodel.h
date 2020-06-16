@@ -25,7 +25,7 @@ public:
     virtual void setDir(const char *filename) { Q_UNUSED(filename); }
 
     virtual bool isRunning() { return running.load(); }
-
+    int getFrameSize() const { return frame_width*data_height; }
     int getFrameWidth() const { return frame_width; }
     int getFrameHeight() const { return frame_height; }
     int getDataHeight() const { return data_height; }
