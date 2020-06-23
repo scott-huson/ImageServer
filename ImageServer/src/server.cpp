@@ -12,6 +12,7 @@ Server::Server(QObject *parent): QTcpServer(parent)
     port = 1337;
     const int width = 640;
     const int height = 480;
+    connectionIndex = 0;
 
     // Create a camera
     Camera = new XIOCamera(width, height, height);
@@ -61,7 +62,8 @@ void Server::StartServer()
 
 void Server::incomingConnection(qintptr handle)
 {
-    Connection *connection = new Connection(this, Camera);
+    connectionIndex++;
+    Connection *connection = new Connection(this, Camera, connectionIndex);
     connection->SetSocket(handle);
 }
 

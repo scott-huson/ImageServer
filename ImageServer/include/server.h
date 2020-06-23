@@ -31,7 +31,7 @@ public slots:
     void reportTimeout();
 
 private:
-
+    int connectionIndex;
 };
 
 #endif // SERVER_H

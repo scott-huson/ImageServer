@@ -15,7 +15,7 @@ class Connection : public QObject
 {
     Q_OBJECT
 public:
-    explicit Connection(QObject *parent = nullptr, CameraModel *ReadingCamera = nullptr);
+    explicit Connection(QObject *parent = nullptr, CameraModel *ReadingCamera = nullptr, int ConnectionNumber = 0);
     void SetSocket(int Descriptor);
 //    virtual uint16_t* getFrame();
 
@@ -28,8 +28,10 @@ public slots:
     void TaskResult(uint16_t *data);
 
 private:
-    QTcpSocket *socket;
-    bool handshake;
-    CameraModel *Camera;
+    QTcpSocket *socket; // TCP Socket of connection
+    bool handshake; // Used to determine if client has accepted transmitted data sizes
+    CameraModel *Camera; // Camera class for data aquisition
+    int connectionFrameCounter; // Used to determine number of frames being sent to each connection
+    int connectionNumber; // Used for identifying connections from each other
 };
 #endif // CONNECTION_H

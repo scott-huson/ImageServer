@@ -1,10 +1,12 @@
 #include "connection.h"
 
-Connection::Connection(QObject *parent, CameraModel *ReadingCamera) :
+Connection::Connection(QObject *parent, CameraModel *ReadingCamera, int ConnectionNumber) :
     QObject(parent)
 {
     QThreadPool::globalInstance()->setMaxThreadCount(3);
     Camera = ReadingCamera;
+    connectionFrameCounter = 0;
+    connectionNumber = ConnectionNumber;
 }
 
 void Connection::SetSocket(int Descriptor)
@@ -33,6 +35,7 @@ void Connection::disconnected()
 
 void Connection::readyRead()
 {
+    qDebug() << connectionNumber << "---";
     qDebug() << "1. Received Request: " << socket->readAll(); // Print out whatever we received from the socket
 
     if(!handshake) { // Handshake hasn't been initiated yet
@@ -51,7 +54,6 @@ void Connection::readyRead()
         } else {
             // In this case that the socket writes sucessfully, all we need to do is wait for the next write to confirm that the handshake has started
             handshake = true;
-            qDebug() << "---";
         }
     } else {
         qDebug() << "2. Getting frame " << socket->state();
@@ -66,8 +68,9 @@ void Connection::readyRead()
 
 void Connection::TaskResult(uint16_t *data)
 {
-    size_t dataSize = Camera->getFrameSize();
-    qDebug() << "3. Got frame. Size: " << dataSize << "bytes";
+    size_t frameNumber = Camera->getFrameSize();
+    size_t dataSize = frameNumber*2;
+    qDebug() << "3. Got frame #" << connectionFrameCounter << ". Size: " << dataSize << "bytes";
 
     char copy_data[dataSize];
     memcpy(copy_data, data, dataSize); // Should theoretically be optimized out?
@@ -77,5 +80,5 @@ void Connection::TaskResult(uint16_t *data)
     const int written = socket->write(Buffer);
     socket->waitForBytesWritten();
     qDebug() << "5. Wrote data back to client" << written << "bytes.";
-    qDebug() << "---";
+    connectionFrameCounter++;
 }
