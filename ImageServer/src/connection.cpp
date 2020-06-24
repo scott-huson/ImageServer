@@ -68,6 +68,7 @@ void Connection::readyRead()
 
 void Connection::TaskResult(uint16_t *data)
 {
+
     size_t frameNumber = Camera->getFrameSize();
     size_t dataSize = frameNumber*2;
     qDebug() << "3. Got frame #" << connectionFrameCounter << ". Size: " << dataSize << "bytes";
@@ -75,6 +76,7 @@ void Connection::TaskResult(uint16_t *data)
     char copy_data[dataSize];
     memcpy(copy_data, data, dataSize); // Should theoretically be optimized out?
     QByteArray Buffer = QByteArray::fromRawData(copy_data, dataSize);
+    qDebug() << "Buffer 1,2,3" << Buffer[0] << Buffer[1] << Buffer[2];
     qDebug() << "4. Processed data. Waiting to write..." << socket->state();
     socket->waitForConnected();
     const int written = socket->write(Buffer);
