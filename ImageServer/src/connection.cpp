@@ -35,8 +35,8 @@ void Connection::disconnected()
 
 void Connection::readyRead()
 {
-    qDebug() << connectionNumber << "---";
-    qDebug() << "1. Received Request: " << socket->readAll(); // Print out whatever we received from the socket
+    //qDebug() << connectionNumber << "---";
+    //qDebug() << "1. Received Request: " << socket->readAll(); // Print out whatever we received from the socket
 
     if(!handshake) { // Handshake hasn't been initiated yet
         // Create the handshake object
@@ -56,7 +56,7 @@ void Connection::readyRead()
             handshake = true;
         }
     } else {
-        qDebug() << "2. Getting frame " << socket->state();
+        //qDebug() << "2. Getting frame " << socket->state();
         // Create task for getting data
         // Since we are doing this unqueued, we can assume that this means the user wants data
         Task *task = new Task(Camera);
@@ -71,16 +71,16 @@ void Connection::TaskResult(uint16_t *data)
 
     size_t frameNumber = Camera->getFrameSize();
     size_t dataSize = frameNumber*2;
-    qDebug() << "3. Got frame #" << connectionFrameCounter << ". Size: " << dataSize << "bytes";
+    qDebug() << "3. Got frame #" << connectionFrameCounter << ". Size: " << dataSize << "bytes" << data[0] << data[1] << data[2];
 
     char copy_data[dataSize];
     memcpy(copy_data, data, dataSize); // Should theoretically be optimized out?
     QByteArray Buffer = QByteArray::fromRawData(copy_data, dataSize);
-    qDebug() << "Buffer 1,2,3" << Buffer[0] << Buffer[1] << Buffer[2];
-    qDebug() << "4. Processed data. Waiting to write..." << socket->state();
+    ///qDebug() << "Buffer 1,2,3" << data[0] << data[1] << data[2];
+    //qDebug() << "4. Processed data. Waiting to write..." << socket->state();
     socket->waitForConnected();
     const int written = socket->write(Buffer);
     socket->waitForBytesWritten();
-    qDebug() << "5. Wrote data back to client" << written << "bytes.";
+    //qDebug() << "5. Wrote data back to client" << written << "bytes.";
     connectionFrameCounter++;
 }
