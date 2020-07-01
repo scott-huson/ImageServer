@@ -25,7 +25,7 @@ void Connection::SetSocket(int Descriptor)
 
 void Connection::connected()
 {
-    qDebug() << "Connection established";
+    qDebug() << "Connection established from" << socket->peerAddress() << socket->peerPort() ;
 }
 
 void Connection::disconnected()

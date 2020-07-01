@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QHostAddress>
 #include <QDebug>
 #include <QThreadPool>
 #include <QJsonObject>
