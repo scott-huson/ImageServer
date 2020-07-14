@@ -9,7 +9,6 @@ Server::Server(QObject *parent): QTcpServer(parent)
     // Basic constants initialization for base case
     const QString file_path = "/Users/Scott/Desktop/JPL/ImageServer/examples/ROICWARM/"; // File Path
     const char *file_path_string = file_path.toLocal8Bit().data();
-    port = 1337;
     const int width = 640;
     const int height = 480;
     connectionIndex = 0;
@@ -51,10 +50,10 @@ Server::Server(QObject *parent): QTcpServer(parent)
     }
 }
 
-void Server::StartServer()
+void Server::StartServer(int port)
 {
     if(listen(QHostAddress::Any, port)) {
-        qDebug() << "Started image server on port " << port;
+        qDebug() << "Started image server on" << (port == 1337 ? "default" : "") << "port" << port;
     } else {
         qDebug() << "Failed to start server. port: " << port;
     }
