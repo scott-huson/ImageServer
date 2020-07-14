@@ -9,5 +9,5 @@ This image server is compatible with MacOS and Linux. Additionally, this image s
 ## LiveView (Open Source Version)
 https://github.com/nasa-jpl/LiveViewOpenSource
 
-## Installation Guide (For Server)
-TBD
+## Installation Guide
+See the [installation guide](https://github.com/scott-huson/ImageServer/wiki/Installation-Guide) for more information on how to get the Image Server set up. 
