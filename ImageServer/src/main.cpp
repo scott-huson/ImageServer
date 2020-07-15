@@ -28,10 +28,8 @@ int main(int argc, char *argv[])
     Server s;
 
     // The following code can be optimized
-    if (port) {
-        s.StartServer(port);
-    } else {
-        s.StartServer();
+    if (!s.StartServer(port)) {
+        a.quit();
     }
 
     return a.exec();

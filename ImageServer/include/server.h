@@ -16,11 +16,12 @@ class Server : public QTcpServer
     Q_OBJECT
 public:
     explicit Server(QObject *parent = 0);
-    void StartServer(int port = 1337);
+    bool StartServer(int port);
     CameraModel *Camera;
     int frWidth, frHeight, dataHeight;
     volatile bool isRunning;
     camera_t cam_type;
+    int default_port = 1337;
 protected:
     void incomingConnection(qintptr handle) override;
 

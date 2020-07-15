@@ -50,12 +50,20 @@ Server::Server(QObject *parent): QTcpServer(parent)
     }
 }
 
-void Server::StartServer(int port)
+bool Server::StartServer(int port)
 {
+    char *des = (char *)"custom";
+    if (!port) {
+        port = default_port;
+        des = (char *)"default";
+    }
+
     if(listen(QHostAddress::Any, port)) {
-        qDebug() << "Started image server on" << (port == 1337 ? "default" : "") << "port" << port;
+        qDebug() << "Started image server on" << des << "port" << port;
+        return true;
     } else {
         qDebug() << "Failed to start server. port: " << port;
+        return false;
     }
 }
 
