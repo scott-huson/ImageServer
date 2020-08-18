@@ -30,8 +30,6 @@ int main(int argc, char *argv[])
     int port = parser.value(portOption).toInt();
     QString directory = parser.value(dirOption);
 
-    qDebug() << "directory" << directory;
-
     Server s;
 
     // The following code can be optimized
