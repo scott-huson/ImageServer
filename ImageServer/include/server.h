@@ -16,12 +16,13 @@ class Server : public QTcpServer
     Q_OBJECT
 public:
     explicit Server(QObject *parent = 0);
-    bool StartServer(int port);
+    bool StartServer(int port, QString directory);
     CameraModel *Camera;
     int frWidth, frHeight, dataHeight;
     volatile bool isRunning;
     camera_t cam_type;
     int default_port = 1337;
+    const QString default_directory = "/Users/Scott/Desktop/JPL/ImageServer/examples/ROICWARM/";
 protected:
     void incomingConnection(qintptr handle) override;
 

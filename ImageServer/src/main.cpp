@@ -8,27 +8,34 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion("0.1");
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("Image Ser");
+    parser.setApplicationDescription("Image Server");
     parser.addHelpOption();
     parser.addVersionOption();
-    parser.addPositionalArgument("source", QCoreApplication::translate("main", "Source file to copy."));
-    parser.addPositionalArgument("destination", QCoreApplication::translate("main", "Destination directory."));
 
-    QCommandLineOption portOption(QStringList() << "p" << "custom-port",
+    QCommandLineOption portOption(QStringList() << "p" << "port",
         QCoreApplication::translate("main", "Start Image Server on manual port: <custom-port>."),
-        QCoreApplication::translate("main", "custom-port"));
-    parser.addOption(portOption);
+        QCoreApplication::translate("main", "port"));
 
-    parser.process(a);
+    QCommandLineOption dirOption(QStringList() << "d" << "directory",
+        QCoreApplication::translate("main", "Start Image Server on custom directory: <custom-directory>."),
+        QCoreApplication::translate("main", "directory"));
+
+    parser.addOption(portOption);
+    parser.addOption(dirOption);
+
+    parser.process(a.arguments());
 
     const QStringList args = parser.positionalArguments();
 
     int port = parser.value(portOption).toInt();
+    QString directory = parser.value(dirOption);
+
+    qDebug() << "directory" << directory;
 
     Server s;
 
     // The following code can be optimized
-    if (!s.StartServer(port)) {
+    if (!s.StartServer(port, directory)) {
         a.quit();
     }
 
