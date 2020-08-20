@@ -15,18 +15,17 @@
 class Connection : public QObject
 {
     Q_OBJECT
+
 public:
     explicit Connection(QObject *parent = nullptr, CameraModel *ReadingCamera = nullptr, int ConnectionNumber = 0);
     void SetSocket(int Descriptor);
-//    virtual uint16_t* getFrame();
-
-signals:
 
 public slots:
     void connected();
     void disconnected();
     void readyRead();
     void TaskResult(uint16_t *data);
+    void timeout();
 
 private:
     QTcpSocket *socket; // TCP Socket of connection

@@ -11,6 +11,7 @@
 class Task : public QObject, public QRunnable
 {
     Q_OBJECT
+
 public:
     Task(CameraModel *PassedCamera);
 

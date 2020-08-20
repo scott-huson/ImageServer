@@ -20,8 +20,11 @@ int main(int argc, char *argv[])
         QCoreApplication::translate("main", "Start Image Server on custom directory: <custom-directory>."),
         QCoreApplication::translate("main", "directory"));
 
+    QCommandLineOption typeOption(QStringList() << "e" << "envi", QCoreApplication::translate("main", "Start Image Server to read '.envi' files. Default is '.xio'"));
+
     parser.addOption(portOption);
     parser.addOption(dirOption);
+    parser.addOption(typeOption);
 
     parser.process(a.arguments());
 
@@ -29,11 +32,11 @@ int main(int argc, char *argv[])
 
     int port = parser.value(portOption).toInt();
     QString directory = parser.value(dirOption);
-
+    bool envi = parser.isSet(typeOption);
     Server s;
 
     // The following code can be optimized
-    if (!s.StartServer(port, directory)) {
+    if (!s.StartServer(port, directory, envi)) {
         a.quit();
     }
 

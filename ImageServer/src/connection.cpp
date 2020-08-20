@@ -17,6 +17,7 @@ void Connection::SetSocket(int Descriptor)
     connect(socket, &QTcpSocket::connected, this, &Connection::connected);
     connect(socket, &QTcpSocket::disconnected, this, &Connection::disconnected);
     connect(socket, &QTcpSocket::readyRead, this, &Connection::readyRead);
+    connect(Camera, &CameraModel::timeout, this, &Connection::timeout);
 
     socket->setSocketDescriptor(Descriptor);
 
@@ -36,7 +37,7 @@ void Connection::disconnected()
 void Connection::readyRead()
 {
     QString message = socket->readAll();
-
+    // Determine what to do on receiving a message
     if(!handshake && message == "ClientConnect") { // Handshake hasn't been initiated yet
         // Create the handshake object
         QJsonObject handshakeObj;
@@ -47,17 +48,14 @@ void Connection::readyRead()
         handshakeObj["width"] = width;
         handshakeObj["requestType"] = "Handshake";
         handshakeDoc.setObject(handshakeObj);
-        if(!socket->write(qCompress(handshakeDoc.toJson()))) {
-            // Terminate the connection
+        if(!socket->write(qCompress(handshakeDoc.toJson()))) { // If we write to the host, complete handshake. If not, disconnect.
             qDebug() << "Could not complete handshake. Terminating...";
+            socket->disconnectFromHost();
         } else {
-            // In this case that the socket writes sucessfully, all we need to do is wait for the next write to confirm that the handshake has started
             handshake = true;
         }
-    } else if (handshake && message == "ReadyFrame"){
-        //qDebug() << "2. Getting frame " << socket->state();
-        // Create task for getting data
-        // Since we are doing this unqueued, we can assume that this means the user wants data
+    } else if (handshake && message == "ReadyFrame"){ // Handshake has occurred
+        // Since we are doing this unqueued, we can assume that a handshaken request means the user wants data
         Task *task = new Task(Camera);
         task->setAutoDelete(true);
         connect(task, &Task::Result, this, &Connection::TaskResult, Qt::QueuedConnection);
@@ -65,16 +63,23 @@ void Connection::readyRead()
     }
 }
 
-void Connection::TaskResult(uint16_t *data)
+void Connection::TaskResult(uint16_t *data) // Take the result and write it to the client
 {
     size_t frameNumber = Camera->getFrameSize();
     size_t dataSize = frameNumber*2;
     char copy_data[dataSize];
-    memcpy(copy_data, data, dataSize); // Should theoretically be optimized out?
+    memcpy(copy_data, data, dataSize); // Should theoretically be optimized out by compiler?
     QByteArray Buffer = QByteArray::fromRawData(copy_data, dataSize);
     socket->waitForConnected();
     const int written = socket->write(Buffer);
     socket->waitForBytesWritten();
     qDebug() << "3. Got frame #" << connectionFrameCounter << ". Size: " << written << "bytes" << data[0] << data[1] << data[2];
     connectionFrameCounter++;
+}
+
+void Connection::timeout() // When the Cameramodel encounters a timeout.
+{
+    // The server could send a disconnect notice or something else in the future. Right now it doesn't do anything.
+    //socket->disconnectFromHost();
+    qDebug() << "Camera timed out";
 }

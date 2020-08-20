@@ -15,5 +15,4 @@ namespace os
     std::string trim(const std::string &value);
 }
 
-
 #endif // OSUTILS_H

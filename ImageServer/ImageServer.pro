@@ -31,6 +31,7 @@ SOURCES += \
         connection.cpp \
         main.cpp \
         server.cpp \
+    src/envicamera.cpp \
         task.cpp \
         xiocamera.cpp \
         osutils.cpp \
@@ -44,6 +45,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     connection.h \
+    include/envicamera.h \
     include/image_type.h \
     server.h \
     task.h \
