@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
     int port = parser.value(portOption).toInt();
     QString directory = parser.value(dirOption);
     bool envi = parser.isSet(typeOption);
-    Server s;
 
-    // The following code can be optimized
+    // Start the server with the arguments from the command line
+    Server s;
     if (!s.StartServer(port, directory, envi)) {
         a.quit();
     }

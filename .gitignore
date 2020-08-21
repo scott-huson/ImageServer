@@ -7,3 +7,4 @@ moc_*
 Makefile
 EDTpdv.run
 EDT_include/
+build*

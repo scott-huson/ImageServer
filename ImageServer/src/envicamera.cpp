@@ -28,8 +28,6 @@ ENVICamera::~ENVICamera()
 
 void ENVICamera::setDir(const char *filename)
 {
-
-    qDebug() << filename;
     // Close out the last file stream
     if (is_reading) {
         is_reading = false;

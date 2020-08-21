@@ -3,7 +3,7 @@
 Connection::Connection(QObject *parent, CameraModel *ReadingCamera, int ConnectionNumber) :
     QObject(parent)
 {
-    QThreadPool::globalInstance()->setMaxThreadCount(3);
+    QThreadPool::globalInstance()->setMaxThreadCount(3); // Increasing the number of threads makes it faster up to sa certain point.
     Camera = ReadingCamera;
     connectionFrameCounter = 0;
     connectionNumber = ConnectionNumber;
@@ -14,10 +14,11 @@ void Connection::SetSocket(int Descriptor)
     handshake = false; // Say that we haven't send the handshake data over yet
     socket = new QTcpSocket(this); // Create the socket value
 
+    // Bind all the signals of the socket to handle different events
     connect(socket, &QTcpSocket::connected, this, &Connection::connected);
     connect(socket, &QTcpSocket::disconnected, this, &Connection::disconnected);
     connect(socket, &QTcpSocket::readyRead, this, &Connection::readyRead);
-    connect(Camera, &CameraModel::timeout, this, &Connection::timeout);
+    connect(Camera, &CameraModel::timeout, this, &Connection::timeout); // This is a duplicate, connected to both to the server timeout and to the connection timeout. One could be removed depending on desired behavior.
 
     socket->setSocketDescriptor(Descriptor);
 
@@ -34,7 +35,7 @@ void Connection::disconnected()
     qDebug() << "Connection closed by client";
 }
 
-void Connection::readyRead()
+void Connection::readyRead() // This happens each time that data is received
 {
     QString message = socket->readAll();
     // Determine what to do on receiving a message
